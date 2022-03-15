@@ -1,0 +1,131 @@
+-- -----------------------------------------------------
+-- Schema bingodb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS bingodb DEFAULT CHARACTER SET utf8 ;
+USE bingodb;
+
+-- -----------------------------------------------------
+-- Table game
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS game (
+  gam_id INT NOT NULL AUTO_INCREMENT,
+  gam_name VARCHAR(45) NOT NULL,
+  PRIMARY KEY (gam_id))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table user
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS user (
+  use_id INT NOT NULL AUTO_INCREMENT,
+  game_id INT NOT NULL,
+  use_username VARCHAR(45) NOT NULL,
+  PRIMARY KEY (use_id),
+  INDEX fk_user_game_idx (game_id ASC) VISIBLE,
+  CONSTRAINT fk_user_game
+    FOREIGN KEY (game_id)
+    REFERENCES game (gam_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table card
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS card (
+  car_id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  PRIMARY KEY (car_id),
+  INDEX fk_card_user1_idx (user_id ASC) VISIBLE,
+  CONSTRAINT fk_card_user1
+    FOREIGN KEY (user_id)
+    REFERENCES user (use_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table ballot_coming_out
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS ballot_coming_out (
+  balout_id INT NOT NULL AUTO_INCREMENT,
+  game_id INT NOT NULL,
+  balout_value VARCHAR(4) NOT NULL,
+  PRIMARY KEY (balout_id),
+  INDEX fk_ballot_coming_out_game1_idx (game_id ASC) VISIBLE,
+  CONSTRAINT fk_ballot_coming_out_game1
+    FOREIGN KEY (game_id)
+    REFERENCES game (gam_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table value_capped
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS value_capped (
+  valcap_id INT NOT NULL AUTO_INCREMENT,
+  valcap_value VARCHAR(4) NOT NULL,
+  PRIMARY KEY (valcap_id))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table value_card
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS value_card (
+  valcar_id INT NOT NULL AUTO_INCREMENT,
+  valcar_value VARCHAR(4) NOT NULL,
+  PRIMARY KEY (valcar_id))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table card_has_value_card
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS card_has_value_card (
+  chvc_id INT NOT NULL AUTO_INCREMENT,
+  card_id INT NOT NULL,
+  value_card_id INT NOT NULL,
+  PRIMARY KEY (chvc_id),
+  INDEX fk_card_has_card_value_card1_idx (card_id ASC) VISIBLE,
+  INDEX fk_card_has_card_value_card_value1_idx (value_card_id ASC) VISIBLE,
+  CONSTRAINT fk_card_has_card_value_card1
+    FOREIGN KEY (card_id)
+    REFERENCES card (car_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_card_has_card_value_card_value1
+    FOREIGN KEY (value_card_id)
+    REFERENCES value_card (valcar_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table card_has_value_capped
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS card_has_value_capped (
+  chvc INT NOT NULL AUTO_INCREMENT,
+  card_id INT NOT NULL,
+  value_capped_id INT NOT NULL,
+  PRIMARY KEY (chvc),
+  INDEX fk_card_has_value_capped_card1_idx (card_id ASC) VISIBLE,
+  INDEX fk_card_has_value_capped_value_capped1_idx (value_capped_id ASC) VISIBLE,
+  CONSTRAINT fk_card_has_value_capped_card1
+    FOREIGN KEY (card_id)
+    REFERENCES card (car_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_card_has_value_capped_value_capped1
+    FOREIGN KEY (value_capped_id)
+    REFERENCES value_capped (valcap_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
